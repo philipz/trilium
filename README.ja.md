@@ -64,7 +64,7 @@ Trilium は Flatpak としても提供されます：
 または、ローカルにクローンして実行
 ```
 npm install
-npm run start-server
+npm run start-electron
 ```
 
 ## 📢 シャウトアウト

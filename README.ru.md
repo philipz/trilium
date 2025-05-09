@@ -53,7 +53,7 @@ Trilium предоставляется в виде десктопного при
 Или склонируйте на своё устройство и запустите
 ```
 npm install
-npm run start-server
+npm run start-electron
 ```
 
 ## Благодарности
