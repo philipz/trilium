@@ -7,7 +7,8 @@ const log = require('./log.js');
 const sqlInit = require('./sql_init.js');
 const cls = require('./cls.js');
 const keyboardActionsService = require('./keyboard_actions.js');
-const {ipcMain} = require('electron');
+const { ipcMain } = require('electron');
+const { enable: enableRemote } = require('@electron/remote/main');
 
 // Prevent the window being garbage collected
 /** @type {Electron.BrowserWindow} */
@@ -18,17 +19,17 @@ let setupWindow;
 async function createExtraWindow(extraWindowHash) {
     const spellcheckEnabled = optionService.getOptionBool('spellCheckEnabled');
 
-    const {BrowserWindow} = require('electron');
+    const { BrowserWindow } = require('electron');
 
     const win = new BrowserWindow({
         width: 1000,
         height: 800,
         title: 'Trilium Notes',
         webPreferences: {
-            enableRemoteModule: true,
             nodeIntegration: true,
             contextIsolation: false,
-            spellcheck: spellcheckEnabled
+            spellcheck: spellcheckEnabled,
+            webviewTag: true
         },
         frame: optionService.getOptionBool('nativeTitleBarVisible'),
         icon: getIcon()
@@ -55,7 +56,7 @@ async function createMainWindow(app) {
 
     const spellcheckEnabled = optionService.getOptionBool('spellCheckEnabled');
 
-    const {BrowserWindow} = require('electron'); // should not be statically imported
+    const { BrowserWindow } = require('electron'); // should not be statically imported
 
     mainWindow = new BrowserWindow({
         x: mainWindowState.x,
@@ -64,7 +65,6 @@ async function createMainWindow(app) {
         height: mainWindowState.height,
         title: 'Trilium Notes',
         webPreferences: {
-            enableRemoteModule: true,
             nodeIntegration: true,
             contextIsolation: false,
             spellcheck: spellcheckEnabled,
@@ -96,9 +96,9 @@ async function createMainWindow(app) {
 }
 
 function configureWebContents(webContents, spellcheckEnabled) {
-    require("@electron/remote/main").enable(webContents);
+    enableRemote(webContents);
 
-    mainWindow.webContents.setWindowOpenHandler((details) => {
+    webContents.setWindowOpenHandler((details) => {
         require("electron").shell.openExternal(details.url);
         return { action: 'deny' }
     });
@@ -128,7 +128,7 @@ function getIcon() {
 }
 
 async function createSetupWindow() {
-    const {BrowserWindow} = require('electron'); // should not be statically imported
+    const { BrowserWindow } = require('electron'); // should not be statically imported
     setupWindow = new BrowserWindow({
         width: 800,
         height: 800,
@@ -136,13 +136,17 @@ async function createSetupWindow() {
         icon: getIcon(),
         webPreferences: {
             // necessary for e.g. utils.isElectron()
-            nodeIntegration: true
+            nodeIntegration: true,
+            contextIsolation: false
         }
     });
 
     setupWindow.setMenuBarVisibility(false);
     setupWindow.loadURL(`http://127.0.0.1:${port}`);
     setupWindow.on('closed', () => setupWindow = null);
+
+    // Enable remote for setup window
+    configureWebContents(setupWindow.webContents, false);
 }
 
 function closeSetupWindow() {
@@ -152,7 +156,7 @@ function closeSetupWindow() {
 }
 
 async function registerGlobalShortcuts() {
-    const {globalShortcut} = require('electron');
+    const { globalShortcut } = require('electron');
 
     await sqlInit.dbReady;
 
