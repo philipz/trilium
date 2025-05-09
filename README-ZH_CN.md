@@ -63,7 +63,7 @@ Trilium 也提供 Flatpak：
 
 ```
 npm install
-npm run start-server
+npm run start-electron
 ```
 
 ## 致谢

@@ -71,7 +71,13 @@ Use a browser based dev environment
 Or clone locally and run
 ```
 npm install
-npm run start-server
+npm run start-electron
+```
+
+About better-sqlite3 rebuild command
+```
+npx electron-rebuild -f -w better-sqlite3
+npm rebuild better-sqlite3
 ```
 
 ## 📢 Shoutouts

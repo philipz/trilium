@@ -74,7 +74,7 @@ Usa un ambiente di sviluppo basato su browser
 O clona localmente ed esegui
 ```
 npm install
-npm run start-server
+npm run start-electron
 ```
 
 ## 📢 Riconoscimenti
